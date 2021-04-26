@@ -44,6 +44,7 @@
 
 #include "core.h"
 #include "command.h"
+#include "lights.h"
 #include "screenshot.h"
 
 enum {
@@ -1179,11 +1180,11 @@ void write_video(struct MPContext *mpctx)
     };
     if (mpctx->next_frames[0]) {
     	struct mp_image_params *params = &mpctx->next_frames[0]->params;
-    	uint8_t *bufR = mpctx->next_frames[0]->planes[0];
-    	uint8_t *bufG = mpctx->next_frames[0]->planes[1];
-    	uint8_t *bufB = mpctx->next_frames[0]->planes[2];
-    	if (bufR && bufG && bufB) {
-    		printf("Size: %s@%d:%d, Values: %dx[%d, %d, %d]\n", mp_imgfmt_to_name(params->imgfmt), params->w, params->h, mpctx->next_frames[0]->num_planes, bufR[0], bufG[0], bufB[0]);
+    	uint8_t *bufY = mpctx->next_frames[0]->planes[0];
+    	uint8_t *bufU = mpctx->next_frames[0]->planes[1];
+    	uint8_t *bufV = mpctx->next_frames[0]->planes[2];
+    	if (bufY && bufU && bufV) {
+    		update_lights(params->w, params->h, params->imgfmt, bufY, bufU, bufV);
     	}
     }
 
@@ -1264,3 +1265,5 @@ error:
     handle_force_window(mpctx, true);
     mp_wakeup_core(mpctx);
 }
+
+#include "player/lights.c" // I couldn't be bothered to get the build system to work
