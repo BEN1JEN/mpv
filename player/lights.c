@@ -3,9 +3,13 @@
 typedef uint32_t rgbPixel_t;
 
 static rgbPixel_t getPixel(int width, int height, uint8_t *yPlane, uint8_t *uPlane, uint8_t *vPlane, uint32_t xPos, uint32_t yPos) {
+	if (xPos >= width || yPos >= height) {
+		return 0x808080;
+	}
+
 	uint8_t y = yPlane[xPos+yPos*width];
-	uint8_t u = uPlane[xPos/2+yPos/2*width];
-	uint8_t v = vPlane[xPos/2+yPos/2*width];
+	uint8_t u = uPlane[xPos/2+yPos/4*width];
+	uint8_t v = vPlane[xPos/2+yPos/4*width];
 
 	int r, g, b;
 	r = y + (1.370705 * (v-128));
@@ -27,12 +31,12 @@ void update_lights(int width, int height, enum mp_imgfmt imgfmt, uint8_t *yPlane
 	}
 
 	printf("\x1b[H");
-	for (int y = 0; y < height-50; y += 100) {
-		for (int x = 0; x < width; x += 50) {
+	for (int y = 0; y < height-20; y += 40) {
+		for (int x = 0; x < width; x += 20) {
 			uint32_t top = getPixel(width, height, yPlane, uPlane, vPlane, x, y);
-			uint32_t bottom = getPixel(width, height, yPlane, uPlane, vPlane, x, y+50);
+			uint32_t bottom = getPixel(width, height, yPlane, uPlane, vPlane, x, y+20);
 			printf(
-				"\x1b[38;2;%u;%u;%um\x1b[48;2;%u;%u;%um▀",
+				"\x1b[38;2;%u;%u;%um\x1b[48;2;%u;%u;%um🬎",
 				top & 255, (top >> 8) & 255, (top >> 16) & 255,
 				bottom & 255, (bottom >> 8) & 255, (bottom >> 16) & 255
 			);
