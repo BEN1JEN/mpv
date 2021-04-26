@@ -1177,6 +1177,16 @@ void write_video(struct MPContext *mpctx)
         .num_frames = MPMIN(mpctx->num_next_frames, req),
         .num_vsyncs = 1,
     };
+    if (mpctx->next_frames[0]) {
+    	struct mp_image_params *params = &mpctx->next_frames[0]->params;
+    	uint8_t *bufR = mpctx->next_frames[0]->planes[0];
+    	uint8_t *bufG = mpctx->next_frames[0]->planes[1];
+    	uint8_t *bufB = mpctx->next_frames[0]->planes[2];
+    	if (bufR && bufG && bufB) {
+    		printf("Size: %s@%d:%d, Values: %dx[%d, %d, %d]\n", mp_imgfmt_to_name(params->imgfmt), params->w, params->h, mpctx->next_frames[0]->num_planes, bufR[0], bufG[0], bufB[0]);
+    	}
+    }
+
     for (int n = 0; n < dummy.num_frames; n++)
         dummy.frames[n] = mpctx->next_frames[n];
     struct vo_frame *frame = vo_frame_ref(&dummy);
